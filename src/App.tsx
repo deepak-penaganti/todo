@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 /**
  * 1) Ability to add new todo - DONE
@@ -9,13 +9,32 @@ import './App.css';
  * @returns 
  */
 
-function App() {
+function App(props: any) {
   // [current value, function to change value]
   const [inputValue, saveInputValue] = useState<string>('');
   const [todosList, saveTodosList] = useState<Array<string>>([]);
   const [todosListDone, saveTodosListDone] = useState<Array<string>>([]);
 
-  // Never goes
+  function handleEffect() {
+    console.log('on Mount');
+
+    // called on Unmount
+    return function () {
+      alert('Good bye');
+    }
+  }
+  // componentDidMount
+  useEffect(handleEffect, []);
+
+
+  function handleNewEffect() {
+    console.log('New Effected', todosList.join(','));
+  }
+  // componentDidUpdate
+  useEffect(handleNewEffect, [todosList.join(','), todosListDone]);
+
+  //
+
   return (
     <main>
       <h1>To-Do App</h1>
@@ -57,7 +76,6 @@ function App() {
         {
           todosList.map(function (item, index) {
             return <li onClick={function () {
-
               /**
                * Remove from existing
                */

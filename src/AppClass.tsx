@@ -7,14 +7,39 @@ declare type AppClassState = {
     name?: string;
 }
 
-export class AppClass extends Component {
+export class AppClass extends Component<{ time: number }> {
     state: AppClassState = {
         todosListDone: [],
         inputValue: '',
         todosList: [],
     };
 
+    constructor(props: any) {
+        super(props);
+        console.log('About to render AppClass');
+    }
+
+    static getDerivedStateFromProps(props: any, state: any) {
+        return { ...state, time: props.time };
+    }
+
+    shouldComponentUpdate(props: any) {
+        if (props.time > 58 && props.time >= 59)
+            return false;
+        return true;
+    }
+
+    // const result = comp.shouldComponentUpdate(props)
+    // if (result === true)
+    //  comp.render(); 
+
+    getSnapshotBeforeUpdate(prevProps: any, prevState: any) {
+        console.log(prevProps, prevState, this.state);
+    }
+
     render() {
+        console.log('Render');
+
         return <main>
             <h1>New To-Do App</h1>
             <input value={this.state.inputValue} onChange={(changeEvent) => {
@@ -49,29 +74,23 @@ export class AppClass extends Component {
             {this.state.todosList.length === 2 ? <h3>Awesome streak!!! Make it hat trick</h3> : undefined}
             <h6>Pending</h6>
             <ol>
-                {
-                    this.state.todosList.map((item, index) => {
-                        return <li onClick={() => {
+                {this.state.todosList.map((item, index) => {
+                    return <li onClick={() => {
+                        const remainingTodoList = [];
+                        for (let itemIndex = 0; itemIndex < this.state.todosList.length; itemIndex++) {
+                            const currentElement = this.state.todosList[itemIndex];
 
-
-                            const remainingTodoList = [];
-                            for (let itemIndex = 0; itemIndex < this.state.todosList.length; itemIndex++) {
-                                const currentElement = this.state.todosList[itemIndex];
-
-                                if (currentElement !== item) {
-                                    remainingTodoList.push(currentElement);
-                                }
+                            if (currentElement !== item) {
+                                remainingTodoList.push(currentElement);
                             }
-                            // saveTodosList(remainingTodoList);
+                        }
 
-                            const newTodoListDone = this.state.todosListDone;
-                            newTodoListDone.push(item);
+                        const newTodoListDone = this.state.todosListDone;
+                        newTodoListDone.push(item);
 
-                            this.setState({ todosList: remainingTodoList, todosListDone: newTodoListDone });
-                            // saveTodosListDone(newTodoListDone);
-
-                        }} key={item + index}>{item}</li>;
-                    })
+                        this.setState({ todosList: remainingTodoList, todosListDone: newTodoListDone });
+                    }} key={item + index}>{item}</li>;
+                })
                 }
             </ol>
             <h6>Done</h6>
@@ -96,4 +115,18 @@ export class AppClass extends Component {
             {this.state.todosListDone.length === 0 ? <h3>Clear skies above again!!!</h3> : undefined}
         </main>;
     }
+
+    componentDidUpdate(prevProps: any) {
+        // save the value to backend
+    }
+
+    componentWillUnmount() {
+        // make a call to server with user id nd logout info
+    }
+
+
+    componentDidMount() {
+
+    }
+
 }
